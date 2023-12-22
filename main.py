@@ -75,114 +75,114 @@ if __name__ == '__main__' :
 
     elif st.session_state["authentication_status"] == True :
 
-    # start_camera = st.button("Start Camera", type="secondary", use_container_width=True, key='start_camera_button')
-    # if start_camera:
-    data = {
-        "Foto Temuan" : [],
-        "Lokasi": [],
-        "Keterangan": [],
-        "Rekomendasi" : []
-        }
-
-
-    if 'df1' not in st.session_state:
-        df1 = pd.DataFrame(data)
-        st.session_state.df1 = df1
+        # start_camera = st.button("Start Camera", type="secondary", use_container_width=True, key='start_camera_button')
+        # if start_camera:
+        data = {
+            "Foto Temuan" : [],
+            "Lokasi": [],
+            "Keterangan": [],
+            "Rekomendasi" : []
+            }
     
-    df1 = st.session_state.df1
-    st.sidebar.write(df1)
     
-    picture = st.camera_input("Take a picture")
-
-
-
-    if picture is not None:
-        # To read image file buffer with OpenCV:
-        bytes_data = picture.getvalue()
-        cv2_img = cv2.imdecode(np.frombuffer(bytes_data, np.uint8), cv2.IMREAD_COLOR)
-        result_img = cv2.cvtColor(cv2_img, cv2.COLOR_BGR2RGB)
-
-        st.image(result_img)
-        output = BytesIO()
-
-        with st.form("Input Form"):
-            user_location_input = st.text_input(label="Lokasi Temuan", placeholder="Please enter location of finding")
-            user_description_input = st.text_input(label="Deskripsi Temuan", placeholder="Please enter description of finding")
-            save_data = st.form_submit_button(label="Save Data")
-            # _ , image_in_excel = cv2.imencode('.png', result_img, [cv2.IMWRITE_JPEG_QUALITY, 100])
-            img_pil = Image.fromarray(result_img)
-            if save_data :
-                new_row = pd.DataFrame({
-                    "Foto Temuan" : [img_pil],
-                    "Lokasi": [user_location_input],
-                    "Keterangan": [user_description_input],
-                    "Rekomendasi" : [None]})
-                st.session_state.df1 = pd.concat([st.session_state.df1, new_row])
-                st.write(st.session_state.df1)
-
-                # current_directory = os.getcwd()
-                # result_path = os.path.join(current_directory, r'result', str((datetime.today() + timedelta(hours=7)).strftime('%d-%b-%Y')))
-                # if not os.path.exists(result_path):
-                #     os.makedirs(result_path)
-                # writer = pd.ExcelWriter(result_path+str('/result.xlsx'), engine='xlsxwriter')
+        if 'df1' not in st.session_state:
+            df1 = pd.DataFrame(data)
+            st.session_state.df1 = df1
+        
+        df1 = st.session_state.df1
+        st.sidebar.write(df1)
+        
+        picture = st.camera_input("Take a picture")
+    
+    
+    
+        if picture is not None:
+            # To read image file buffer with OpenCV:
+            bytes_data = picture.getvalue()
+            cv2_img = cv2.imdecode(np.frombuffer(bytes_data, np.uint8), cv2.IMREAD_COLOR)
+            result_img = cv2.cvtColor(cv2_img, cv2.COLOR_BGR2RGB)
+    
+            st.image(result_img)
+            output = BytesIO()
+    
+            with st.form("Input Form"):
+                user_location_input = st.text_input(label="Lokasi Temuan", placeholder="Please enter location of finding")
+                user_description_input = st.text_input(label="Deskripsi Temuan", placeholder="Please enter description of finding")
+                save_data = st.form_submit_button(label="Save Data")
+                # _ , image_in_excel = cv2.imencode('.png', result_img, [cv2.IMWRITE_JPEG_QUALITY, 100])
+                img_pil = Image.fromarray(result_img)
+                if save_data :
+                    new_row = pd.DataFrame({
+                        "Foto Temuan" : [img_pil],
+                        "Lokasi": [user_location_input],
+                        "Keterangan": [user_description_input],
+                        "Rekomendasi" : [None]})
+                    st.session_state.df1 = pd.concat([st.session_state.df1, new_row])
+                    st.write(st.session_state.df1)
+    
+                    # current_directory = os.getcwd()
+                    # result_path = os.path.join(current_directory, r'result', str((datetime.today() + timedelta(hours=7)).strftime('%d-%b-%Y')))
+                    # if not os.path.exists(result_path):
+                    #     os.makedirs(result_path)
+                    # writer = pd.ExcelWriter(result_path+str('/result.xlsx'), engine='xlsxwriter')
+                    
+                    writer = pd.ExcelWriter(output, engine='xlsxwriter')
+                    st.session_state.df1.to_excel(writer, sheet_name="Sheet1", startrow=0, header=True, index=False)
+                    workbook  = writer.book
+                    worksheet = writer.sheets["Sheet1"]
+                    # worksheet = workbook.add_worksheet()
+    
+                    for i, image in enumerate(st.session_state.df1["Foto Temuan"]):
+                        # # # image_path = os.path.join(current_directory, r'result', str((datetime.today() + timedelta(hours=7)).strftime('%d-%b-%Y')))
+                        # # # if os.path.exists(image_path) == False:
+                        # # #     os.mkdir(image_path)
+                        # # image.save(f"{image_path}/img_{i}.png", "PNG") # Save your image before inserting
+                        # worksheet.insert_image(i+1, 0, f"{image_path}/img_{i}.png")
+                        image.save(f"img_{i}.png", "PNG") # Save your image before inserting
+                        worksheet.insert_image(i+1, 0, f"img_{i}.png")
+    
+                    writer.save()
+    
+            col_1, col_2 = st.columns([1,1])
+            with col_1 :
+                button_clicked_1 = st.sidebar.download_button(label=':cloud: Download winners', type="secondary", data=output.getvalue(),file_name='result.xlsx')
+    
+    
+    
+        # with st.form("Email Form"):
+        #     subject = st.text_input(label="Subject", placeholder="Please enter subject of your mail")
+        #     fullName = st.text_input(label="Full Name", placeholder="Please enter your full name")
+        #     email = st.text_input(label="Email address", placeholder="Please enter your email address")
+        #     text = st.text_area(label="Email text", placeholder="Please enter your text here")
+        #     # uploaded_file = st.file_uploader("Attachment")
+        #     attachment , uploaded_file = cv2.imencode('.png', result_img, [cv2.IMWRITE_JPEG_QUALITY, 100])
+        #     submit_res = st.form_submit_button(label="Send")
+    
+        #     if submit_res:
+        #         extra_info = """
+    
+        #         ----------------------------------------------
+    
+        #         Email Address of sender {} \n
                 
-                writer = pd.ExcelWriter(output, engine='xlsxwriter')
-                st.session_state.df1.to_excel(writer, sheet_name="Sheet1", startrow=0, header=True, index=False)
-                workbook  = writer.book
-                worksheet = writer.sheets["Sheet1"]
-                # worksheet = workbook.add_worksheet()
-
-                for i, image in enumerate(st.session_state.df1["Foto Temuan"]):
-                    # # # image_path = os.path.join(current_directory, r'result', str((datetime.today() + timedelta(hours=7)).strftime('%d-%b-%Y')))
-                    # # # if os.path.exists(image_path) == False:
-                    # # #     os.mkdir(image_path)
-                    # # image.save(f"{image_path}/img_{i}.png", "PNG") # Save your image before inserting
-                    # worksheet.insert_image(i+1, 0, f"{image_path}/img_{i}.png")
-                    image.save(f"img_{i}.png", "PNG") # Save your image before inserting
-                    worksheet.insert_image(i+1, 0, f"img_{i}.png")
-
-                writer.save()
-
-        col_1, col_2 = st.columns([1,1])
-        with col_1 :
-            button_clicked_1 = st.sidebar.download_button(label=':cloud: Download winners', type="secondary", data=output.getvalue(),file_name='result.xlsx')
-
-
-
-    # with st.form("Email Form"):
-    #     subject = st.text_input(label="Subject", placeholder="Please enter subject of your mail")
-    #     fullName = st.text_input(label="Full Name", placeholder="Please enter your full name")
-    #     email = st.text_input(label="Email address", placeholder="Please enter your email address")
-    #     text = st.text_area(label="Email text", placeholder="Please enter your text here")
-    #     # uploaded_file = st.file_uploader("Attachment")
-    #     attachment , uploaded_file = cv2.imencode('.png', result_img, [cv2.IMWRITE_JPEG_QUALITY, 100])
-    #     submit_res = st.form_submit_button(label="Send")
-
-    #     if submit_res:
-    #         extra_info = """
-
-    #         ----------------------------------------------
-
-    #         Email Address of sender {} \n
-            
-    #         Sender Full Name {} \n
-
-    #         ---------------------------------------------- \n \n
-
-
-    #         """.format(email, fullName)
-
-    #         message = extra_info + text
-
-    #         st.write("SENDER : ", SENDER_ADDRESS)
-    #         st.write("SENT TO :", email)
-    #         # st.write("PORT", PORT)
-
-
-    #         send_email(sender=SENDER_ADDRESS, password=SENDER_PASSWORD, receiver=email, smtp_server=SMTP_SERVER_ADDRESS, smtp_port=PORT, email_message=message, subject=subject, attachment=attachment, attach_file=uploaded_file)
-    #         st.success('Email has been sent')
-
-
-
-
-
+        #         Sender Full Name {} \n
+    
+        #         ---------------------------------------------- \n \n
+    
+    
+        #         """.format(email, fullName)
+    
+        #         message = extra_info + text
+    
+        #         st.write("SENDER : ", SENDER_ADDRESS)
+        #         st.write("SENT TO :", email)
+        #         # st.write("PORT", PORT)
+    
+    
+        #         send_email(sender=SENDER_ADDRESS, password=SENDER_PASSWORD, receiver=email, smtp_server=SMTP_SERVER_ADDRESS, smtp_port=PORT, email_message=message, subject=subject, attachment=attachment, attach_file=uploaded_file)
+        #         st.success('Email has been sent')
+    
+    
+    
+    
+    
