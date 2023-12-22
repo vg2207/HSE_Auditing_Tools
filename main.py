@@ -6,6 +6,8 @@ import pandas as pd
 from datetime import timedelta, datetime
 from PIL import Image
 from io import BytesIO
+import yaml
+from yaml.loader import SafeLoader
 
 # from utils.helper import send_email
 # from utils.constants import (SMTP_SERVER, PORT, SENDER_ADDRESS, SENDER_PASSWORD)
