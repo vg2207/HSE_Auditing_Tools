@@ -1,0 +1,7 @@
+DateTime==5.2
+streamlit==1.26.0
+opencv-python-headless==4.6.0.66
+numpy==1.23.0
+pandas==1.4.3
+Pillow==9.2.0
+XlsxWriter==3.1.2
