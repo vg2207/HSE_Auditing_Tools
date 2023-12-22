@@ -147,7 +147,10 @@ if __name__ == '__main__' :
     
         col_1, col_2 = st.columns([1,1])
         with col_1 :
-            button_clicked_1 = st.sidebar.download_button(label=':cloud: Download Result', type="secondary", data=output.getvalue(),file_name='result.xlsx')
+            try :
+                button_clicked_1 = st.sidebar.download_button(label=':cloud: Download Result', type="secondary", data=output.getvalue(),file_name='result.xlsx')
+            except :
+                st.error('Take the photo first')
     
     
     
