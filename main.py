@@ -5,6 +5,7 @@ import pandas as pd
 from datetime import timedelta, datetime
 from PIL import Image
 import os
+from io import BytesIO
 
 # from utils.helper import send_email
 # from utils.constants import (SMTP_SERVER, PORT, SENDER_ADDRESS, SENDER_PASSWORD)
@@ -17,20 +18,19 @@ from email.mime.image import MIMEImage
 
 
 @st.cache_data
-def send_email(sender, password, receiver, smtp_server, smtp_port, email_message, subject, attachment=None) :
-# def send_email(sender, password, receiver, smtp_server, smtp_port, email_message, subject, attachment=None, attach_file=None) :
+def send_email(sender, password, receiver, smtp_server, smtp_port, email_message, subject, attachment=None, attach_file=None) :
     message = MIMEMultipart()
     message['To'] = Header(receiver)
     message['From'] = Header(sender)
     message['Subject'] = Header(subject)
     message.attach(MIMEText(email_message, 'plain', 'utf-8'))
-    # file_name=(datetime.today() + timedelta(hours=7)).strftime('%d-%b-%Y %H-%M-%S')+'.png'
+    file_name=(datetime.today() + timedelta(hours=7)).strftime('%d-%b-%Y %H-%M-%S')+'.png'
     
     if attachment:
-        # att = MIMEImage(attach_file, _subtype='png')
-        # att.add_header('Content-Disposition', 'attachment', filename=file_name)
-        att = MIMEApplication(attachment.read(), _subtype='txt')
-        att.add_header('Content-Disposition', 'attachment', filename=attachment.name)
+        att = MIMEImage(attach_file, _subtype='png')
+        att.add_header('Content-Disposition', 'attachment', filename=file_name)
+        # att = MIMEApplication(attachment.read(), _subtype='txt')
+        # att.add_header('Content-Disposition', 'attachment', filename=attachment.name)
         message.attach(att)
 
     server = smtplib.SMTP(smtp_server, smtp_port)
@@ -78,6 +78,7 @@ if __name__ == '__main__' :
         result_img = cv2.cvtColor(cv2_img, cv2.COLOR_BGR2RGB)
 
         st.image(result_img)
+        output = BytesIO()
 
         with st.form("Input Form"):
             user_location_input = st.text_input(label="Lokasi Temuan", placeholder="Please enter location of finding")
@@ -94,24 +95,32 @@ if __name__ == '__main__' :
                 st.session_state.df1 = pd.concat([st.session_state.df1, new_row])
                 st.write(st.session_state.df1)
 
-                current_directory = os.getcwd()
-                result_path = os.path.join(current_directory, r'result', str((datetime.today() + timedelta(hours=7)).strftime('%d-%b-%Y')))
-                if not os.path.exists(result_path):
-                    os.makedirs(result_path)
-                writer = pd.ExcelWriter(result_path+str('/result.xlsx'), engine='xlsxwriter')
+                # current_directory = os.getcwd()
+                # result_path = os.path.join(current_directory, r'result', str((datetime.today() + timedelta(hours=7)).strftime('%d-%b-%Y')))
+                # if not os.path.exists(result_path):
+                #     os.makedirs(result_path)
+                # writer = pd.ExcelWriter(result_path+str('/result.xlsx'), engine='xlsxwriter')
+                
+                writer = pd.ExcelWriter(output, engine='xlsxwriter')
                 st.session_state.df1.to_excel(writer, sheet_name="Sheet1", startrow=0, header=True, index=False)
                 workbook  = writer.book
                 worksheet = writer.sheets["Sheet1"]
                 # worksheet = workbook.add_worksheet()
 
                 for i, image in enumerate(st.session_state.df1["Foto Temuan"]):
-                    image_path = os.path.join(current_directory, r'result', str((datetime.today() + timedelta(hours=7)).strftime('%d-%b-%Y')))
-                    if os.path.exists(image_path) == False:
-                        os.mkdir(image_path)
-                    image.save(f"{image_path}/img_{i}.png", "PNG") # Save your image before inserting
-                    worksheet.insert_image(i+1, 0, f"{image_path}/img_{i}.png")
+                    # # # image_path = os.path.join(current_directory, r'result', str((datetime.today() + timedelta(hours=7)).strftime('%d-%b-%Y')))
+                    # # # if os.path.exists(image_path) == False:
+                    # # #     os.mkdir(image_path)
+                    # # image.save(f"{image_path}/img_{i}.png", "PNG") # Save your image before inserting
+                    # worksheet.insert_image(i+1, 0, f"{image_path}/img_{i}.png")
+                    image.save(f"img_{i}.png", "PNG") # Save your image before inserting
+                    worksheet.insert_image(i+1, 0, f"img_{i}.png")
 
                 writer.save()
+
+        col_1, col_2 = st.columns([1,1])
+        with col_1 :
+            button_clicked_1 = st.sidebar.download_button(label=':cloud: Download winners', type="secondary", data=output.getvalue(),file_name='result.xlsx')
 
 
 
@@ -120,8 +129,8 @@ if __name__ == '__main__' :
         fullName = st.text_input(label="Full Name", placeholder="Please enter your full name")
         email = st.text_input(label="Email address", placeholder="Please enter your email address")
         text = st.text_area(label="Email text", placeholder="Please enter your text here")
-        uploaded_file = st.file_uploader("Attachment")
-        # attachment , uploaded_file = cv2.imencode('.png', result_img, [cv2.IMWRITE_JPEG_QUALITY, 100])
+        # uploaded_file = st.file_uploader("Attachment")
+        attachment , uploaded_file = cv2.imencode('.png', result_img, [cv2.IMWRITE_JPEG_QUALITY, 100])
         submit_res = st.form_submit_button(label="Send")
 
         if submit_res:
@@ -144,8 +153,8 @@ if __name__ == '__main__' :
             st.write("SENT TO :", email)
             # st.write("PORT", PORT)
 
-            send_email(sender=SENDER_ADDRESS, password=SENDER_PASSWORD, receiver=email, smtp_server=SMTP_SERVER_ADDRESS, smtp_port=PORT, email_message=message, subject=subject, attachment=uploaded_file)
-            # send_email(sender=SENDER_ADDRESS, password=SENDER_PASSWORD, receiver=email, smtp_server=SMTP_SERVER_ADDRESS, smtp_port=PORT, email_message=message, subject=subject, attachment=attachment, attach_file=uploaded_file)
+
+            send_email(sender=SENDER_ADDRESS, password=SENDER_PASSWORD, receiver=email, smtp_server=SMTP_SERVER_ADDRESS, smtp_port=PORT, email_message=message, subject=subject, attachment=attachment, attach_file=uploaded_file)
             st.success('Email has been sent')
 
 
