@@ -1,10 +1,10 @@
 import streamlit as st
+import streamlit_authenticator as stauth
 import cv2
 import numpy as np
 import pandas as pd
 from datetime import timedelta, datetime
 from PIL import Image
-import os
 from io import BytesIO
 
 # from utils.helper import send_email
@@ -47,8 +47,33 @@ PORT='587'
 SMTP_SERVER_ADDRESS='smtp.gmail.com'
 SENDER_PASSWORD='jrsi ommh hacv lrpq'
 
+
+
 if __name__ == '__main__' :
 
+    # --- USER AUTHENTICATION ---
+
+    with open('config.yaml') as file:
+        config = yaml.load(file, Loader=SafeLoader)
+
+    authenticator = stauth.Authenticate(
+        config['credentials'],
+        config['cookie']['name'],
+        config['cookie']['key'],
+        config['cookie']['expiry_days']
+    )
+
+    name, authentication_status, username = authenticator.login('Login', 'main')
+
+    # IF AUTHENTIFICATION TRUE THEN GO TO APPS
+
+    if st.session_state["authentication_status"] == None:
+        st.warning('Please enter your username and password')
+
+    elif st.session_state["authentication_status"] == False:
+        st.error('Username/password is incorrect')
+
+    elif st.session_state["authentication_status"] == True :
 
     # start_camera = st.button("Start Camera", type="secondary", use_container_width=True, key='start_camera_button')
     # if start_camera:
