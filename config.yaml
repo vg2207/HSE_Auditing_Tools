@@ -1,0 +1,22 @@
+credentials:
+  usernames:
+    ltluser01:
+      name: Viorie Gerrid S.
+      password: '$2b$12$b0FY6Xzw.HLhBlV4548gdup1KWbjI5jBgdy8v4jSCH.HiI6NM3d.m'
+      company: Lautan Luas Tbk.
+    ltluser02:
+      name: Khristian Anton Hartono
+      password: '$2b$12$hCoiwwkZgZ3Ve0lZW97.o.FcqtNaIrhCbb1.SUr1E9Kp9Rj00Id2y'
+      company: Pacinesia
+    ltluser03:
+      name: Tjen Marcel
+      password: '$2b$12$3xilCSR7XF2mynBG5ocqEO/RBT2vd3WfzCEihyM2ADIVHdFI1joiW'
+      company: Lautan Natural Krimerindo
+    ltluser04:
+      name: Danny S. Adenan
+      password: '$2b$12$N4JtpED5tSd/5qYgjloswOd/qdRqrCtCeUv7sct5kLwBL.5Lk/js.'
+      company: Dunia Kimia Jaya
+cookie:
+  expiry_days: 1
+  key: hse_tools_signature_key # Must be string
+  name: hse_tools_cookie_name
