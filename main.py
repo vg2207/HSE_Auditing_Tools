@@ -154,38 +154,38 @@ if __name__ == '__main__' :
     
     
     
-        # with st.form("Email Form"):
-        #     subject = st.text_input(label="Subject", placeholder="Please enter subject of your mail")
-        #     fullName = st.text_input(label="Full Name", placeholder="Please enter your full name")
-        #     email = st.text_input(label="Email address", placeholder="Please enter your email address")
-        #     text = st.text_area(label="Email text", placeholder="Please enter your text here")
-        #     # uploaded_file = st.file_uploader("Attachment")
-        #     attachment , uploaded_file = cv2.imencode('.png', result_img, [cv2.IMWRITE_JPEG_QUALITY, 100])
-        #     submit_res = st.form_submit_button(label="Send")
+        with st.form("Email Form"):
+            subject = st.text_input(label="Subject", placeholder="Please enter subject of your mail")
+            fullName = st.text_input(label="Full Name", placeholder="Please enter your full name")
+            email = st.text_input(label="Email address", placeholder="Please enter your email address")
+            text = st.text_area(label="Email text", placeholder="Please enter your text here")
+            # uploaded_file = st.file_uploader("Attachment")
+            attachment , uploaded_file = cv2.imencode('.png', result_img, [cv2.IMWRITE_JPEG_QUALITY, 100])
+            submit_res = st.form_submit_button(label="Send")
     
-        #     if submit_res:
-        #         extra_info = """
+            if submit_res:
+                extra_info = """
     
-        #         ----------------------------------------------
+                ----------------------------------------------
     
-        #         Email Address of sender {} \n
+                Email Address of sender {} \n
                 
-        #         Sender Full Name {} \n
+                Sender Full Name {} \n
     
-        #         ---------------------------------------------- \n \n
-    
-    
-        #         """.format(email, fullName)
-    
-        #         message = extra_info + text
-    
-        #         st.write("SENDER : ", SENDER_ADDRESS)
-        #         st.write("SENT TO :", email)
-        #         # st.write("PORT", PORT)
+                ---------------------------------------------- \n \n
     
     
-        #         send_email(sender=SENDER_ADDRESS, password=SENDER_PASSWORD, receiver=email, smtp_server=SMTP_SERVER_ADDRESS, smtp_port=PORT, email_message=message, subject=subject, attachment=attachment, attach_file=uploaded_file)
-        #         st.success('Email has been sent')
+                """.format(email, fullName)
+    
+                message = extra_info + text
+    
+                st.write("SENDER : ", SENDER_ADDRESS)
+                st.write("SENT TO :", email)
+                # st.write("PORT", PORT)
+    
+    
+                send_email(sender=SENDER_ADDRESS, password=SENDER_PASSWORD, receiver=email, smtp_server=SMTP_SERVER_ADDRESS, smtp_port=PORT, email_message=message, subject=subject, attachment=attachment, attach_file=uploaded_file)
+                st.success('Email has been sent')
     
     
     
