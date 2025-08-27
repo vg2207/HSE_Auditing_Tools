@@ -65,7 +65,7 @@ if __name__ == '__main__' :
         config['cookie']['expiry_days']
     )
 
-    name, authentication_status, username = authenticator.login('Login', 'main')
+    name, authentication_status, username = authenticator.login('main','Login')
 
     # IF AUTHENTIFICATION TRUE THEN GO TO APPS
 
